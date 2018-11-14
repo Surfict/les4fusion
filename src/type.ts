@@ -1,18 +1,17 @@
-export interface hereStruct {
-    own : boolean,
-    everyTime: boolean
-}
-
 export interface discordStruct {
-    discordId: string, name: string, here: hereStruct, neighboards: boolean,neighboards_name: string[], channelId: string
+    discordId: string, channels: string[], name: String
 }
 
+export interface fusionStruct {
+    channels: string[]
+    name: string,
+    forwardingName: boolean,
+    forwardingDate: boolean
+}
 
 
 export interface configStruct {
     discordBotToken: string,
     discords: discordStruct[],
-    telegramBotToken: string,
-    telegramChatID: string,
-    delayHereControl: number
+    fusions: fusionStruct[],
 }

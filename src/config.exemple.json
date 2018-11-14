@@ -1,46 +1,32 @@
 {
-    "discordBotToken": "rthtrhtr",
+    "discordBotToken": "uouiioyuoiuyoi",
     "discords": [
-        {
-            "discordId": "5028728577",
-            "name": "Discord du 14",
-            "here": {
-                "own": true,
-                "everyTime": true
-              },
-            "neighboards": false,
-            "neighboards_name": [],
-            "channelId": "502873033555656"
-        },
-        {
-            "discordId": "50287285777",
-            "name": "Discord du 1",
-            "here": {
-                "own": true,
-                "everyTime": true
-              },
-            "neighboards": true,
-            "neighboards_name": [
-                "Discord du 14"
-            ],
-            "channelId": "5049809565656"
-        },
-        {
-            "discordId": "5028728",
-            "name": "Discord du 16",
-            "here": {
-                "own": true,
-                "everyTime": true
-              },
-            "neighboards": true,
-            "neighboards_name": [
-                "Discord du 14",
-                "Discord du 15"
-            ],
-            "channelId": "504980465465464"
-        }
+      {
+        "discordId": "737783783",
+        "name": "Discord du 14",
+        "channels": ["783873873"]
+      },
+      {
+        "discordId": "7537354",
+        "name": "Discord du 15",
+        "channels": ["45343434"]
+      },
+      {
+        "discordId": "425424",
+        "name": "Discord du 16",
+        "channels": ["425542542"]
+      }
     ],
-    "telegramBotToken": "5454jgjgj",
-    "telegramChatID": "-10054455454",
-    "delayHereControl": 2
-}
+    "fusions": [
+      {
+        "name": "les trois discords",
+        "channels": [
+          "42542",
+          "42544534352",
+          "4354343"
+        ],
+        "forwardingName": true,
+        "forwardingDate": true
+      }
+    ]
+  }

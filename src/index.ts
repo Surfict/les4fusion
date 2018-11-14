@@ -40,12 +40,6 @@ util.checkDiscordBot(discordBot).catch(e => {
   err.emit("error", e);
 });
 
-// Telegram
-const telegramBot = new TelegramBot(conf.telegramBotToken);
-util.checkTelegramBot(telegramBot).catch(e => {
-  err.emit("error", e);
-});
-
 util.isConfigOk(discordBot).catch(e => {
   err.emit("error", e);
 });
@@ -56,34 +50,9 @@ discordBot.login(config.discordBotToken);
 discordBot.on("error", console.error);
 
 // Var init
-let dates: { [date: string]: Moment } = {};
 let discords = conf.discords;
 
-// For every Discords with here activated, we add a date elemnt
-discords.forEach(discord => {
-  if (discord.here.own || discord.here.everyTime) {
-    dates[discord.channelId] = moment().subtract(7, "days");
-  }
-});
 
-function sendHere(
-  element: discordStruct,
-  message: Message,
-  channel?: TextChannel
-) {
-  // Is any here have already send in the last conf.delayHereControl minutes ?
-  let testDate = moment(dates[element.channelId]);
-  if (testDate.add(conf.delayHereControl, "minutes").isBefore(moment())) {
-    if (!util.isHerePresent(message.content)) {
-      if (channel) {
-        channel.send("@here : Nouveau 100 détecté !");
-      } else {
-        message.channel.send("@here : Nouveau 100 détecté !");
-      }
-    }
-    dates[element.channelId] = moment();
-  }
-}
 
 // For every message on the discord
 discordBot.on("message", (message: Message) => {
@@ -92,32 +61,19 @@ discordBot.on("message", (message: Message) => {
     const commandes = new Command(message);
     commandes.sort();
   } else {
+
+    if (util.isInFusion(message))
+    {
+      
+    }
+
+
     let discords = conf.discords;
     let files = util.imagesToArray(message);
     discords.forEach(element => {
       if (message.channel.id === element.channelId) {
         // Is the message coming from the bot ?
         if (!util.isMessageAlreadyPosted(message.content)) {
-          telegramBot.sendMessage(
-            conf.telegramChatID,
-            element.name +
-              ", " +
-              message.author.username +
-              " à " +
-              moment().format("h:mm") +
-              " : " +
-              message.content
-          );
-
-          if (files.length) {
-            files.forEach(file => {
-              telegramBot.sendPhoto(conf.telegramChatID, file);
-            });
-          }
-
-          if (element.here.own) {
-            sendHere(element, message);
-          }
 
           // We are going to sent this message to all the neighbords that have asked for it.
           discords.forEach(discord => {
