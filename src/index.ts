@@ -6,6 +6,7 @@ import { Command } from "./commands/index.js";
 import { EventEmitter } from "events";
 import i18next from "i18next";
 import { translation } from "./i18n/index.js";
+import { Check } from "./checks/index.js";
 
 i18next.init({
   lng: "fr_FR",
@@ -32,11 +33,11 @@ err.on("error", value => {
 // Bots initialisation
 // Discord
 const discordBot = new Discord.Client();
-util.checkDiscordBot(discordBot).catch(e => {
+Check.checkDiscordBot(discordBot).catch(e => {
   err.emit("error", e);
 });
 
-util.isConfigOk(discordBot).catch(e => {
+Check.isConfigOk(discordBot).catch(e => {
   err.emit("error", e);
 });
 
@@ -49,7 +50,7 @@ discordBot.on("error", console.error);
 discordBot.on("message", (message: Message) => {
   //Command to the bot
   if (message.content.indexOf(discordBot.user.id) !== -1) {
-    const commandes = new Command(message);
+    const commandes = new Command(message, discordBot);
     commandes.sort();
   } else {
     if (!util.isMessageAlreadyFromTheBot(message.author.id, discordBot.user.id)) {
