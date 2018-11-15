@@ -52,15 +52,12 @@ discordBot.on("message", (message: Message) => {
     const commandes = new Command(message);
     commandes.sort();
   } else {
-    if (!util.isMessageAlreadyFromTheBot(message.author.id)) {
+    if (!util.isMessageAlreadyFromTheBot(message.author.id, discordBot.user.id)) {
       const messageId = message.channel.id;
       const filesFromMessage = util.imagesToArray(message);
-      console.log(messageId);
 
       if (util.isInFusion(messageId)) {
-        console.log('okinfusion')
         const fusions = util.fusionsConcernedList(messageId);
-        console.log(fusions)
         fusions.forEach(fusion => {
           fusion.channels.forEach(channel => {
             const channelDiscord = discordBot.channels.get(

@@ -4,10 +4,8 @@ import { Client, Message } from "discord.js";
 import { uniq } from "lodash";
 import moment from "moment";
 export class util {
-  static isMessageAlreadyFromTheBot(idAuthor: string) {
-    console.log(idAuthor);
-    console.log(config.discordBotId);
-    return idAuthor === config.discordBotId;
+  static isMessageAlreadyFromTheBot(idAuthor: string, botID: string) {
+    return idAuthor === botID;
   }
 
   static imagesToArray(message: Message): string[] {
@@ -56,8 +54,8 @@ export class util {
       const disc = discordBot.guilds.get(discord.discordId);
       if (!disc) {
         throw "The discord " +
-          discord.discordId +
-          " is not find by the discord bot. Please check your configuration file or check that the bot is on your Discord Server";
+        discord.discordId +
+        " is not find by the discord bot. Please check your configuration file or check that the bot is on your Discord Server";
       }
     });
     // Are the channels id provided found by the bot ? (is the bot on the Discord server, and is the ID provided good ?)
@@ -65,8 +63,8 @@ export class util {
       const chan = discordBot.channels.get(channel);
       if (!chan) {
         throw "The channel " +
-          channel +
-          " is not find by the discord bot. Please check your configuration file.";
+        channel +
+        " is not find by the discord bot. Please check your configuration file.";
       }
     });
   }
@@ -76,7 +74,7 @@ export class util {
       await discordBot.login(config.discordBotToken);
     } catch (error) {
       throw "Discord bot didn't start. Please verify your token in the config file. Message error : " +
-        error;
+      error;
     }
   }
 
@@ -101,28 +99,21 @@ export class util {
     const fusions: FusionStruct[] = [];
 
     config.fusions.forEach(fusion => {
-      if (fusion.active) {
-        if (
-          fusion.channels.some(
-            channel => channel.indexOf(idChannelMessage) !== -1
-          )
-        ) {
-          const channelsToForward: string[] = [];
-          fusion.channels.forEach(channel => {
-            if (channel !== idChannelMessage) {
-              channelsToForward.push(channel);
-            }
-
-            fusions.push({
-              active: true,
-              channels: channelsToForward,
-              name: fusion.name,
-              forwardingDate: fusion.forwardingDate,
-              forwardingName: fusion.forwardingName,
-              forwardingDiscord: fusion.forwardingDiscord
-            });
-          });
-        }
+      if (fusion.active && fusion.channels.some(channel => channel.indexOf(idChannelMessage) !== -1)) {
+        const channelsToForward: string[] = [];
+        fusion.channels.forEach(channel => {
+          if (channel !== idChannelMessage) {
+            channelsToForward.push(channel);
+          }
+        });
+        fusions.push({
+          active: true,
+          channels: channelsToForward,
+          name: fusion.name,
+          forwardingDate: fusion.forwardingDate,
+          forwardingName: fusion.forwardingName,
+          forwardingDiscord: fusion.forwardingDiscord
+        });
       }
     });
     return fusions;

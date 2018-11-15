@@ -13,7 +13,6 @@ export interface FusionStruct {
 
 export interface ConfigStruct {
     discordBotToken: string,
-    discordBotId: String,
     discords: DiscordStruct[],
     fusions: FusionStruct[],
 }
