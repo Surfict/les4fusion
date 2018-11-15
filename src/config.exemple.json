@@ -1,5 +1,6 @@
 {
     "discordBotToken": "uouiioyuoiuyoi",
+    "discordBotId" : "545745455",
     "discords": [
       {
         "discordId": "737783783",
@@ -26,7 +27,9 @@
           "4354343"
         ],
         "forwardingName": true,
-        "forwardingDate": true
+        "forwardingDate": true,
+        "forwardingDiscord": true,
+        "active": true
       }
     ]
   }

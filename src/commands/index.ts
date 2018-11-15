@@ -1,11 +1,11 @@
 import { Message } from "discord.js";
 import i18next from "i18next";
-import { discordStruct } from "../type.js";
+import { DiscordStruct } from "../type.js";
 import config from "./../config.json";
 
 export class Command {
   message: Message;
-  discord: discordStruct | undefined;
+  discord: DiscordStruct | undefined;
 
   constructor(message: Message) {
     this.message = message;
@@ -41,16 +41,19 @@ export class Command {
   }
 
   neighboards() {
+    /*
     if (this.discord) {
       this.message.channel.send(
         "Discords associés activés : " +
           (this.discord.neighboards ? "oui" : "non")
       );
     }
+    */
   }
 
   neighboardsList() {
     if (this.discord) {
+      /*
       if (
         this.discord.neighboards &&
         this.discord.neighboards_name.length > 0
@@ -64,6 +67,8 @@ export class Command {
         this.message.channel.send("Aucun discord associé.");
       }
     }
+    */
+  }
   }
 
   rappel() {
@@ -71,6 +76,7 @@ export class Command {
   }
 
   here() {
+    /*
     if (this.discord) {
       if (this.discord.here) {
         this.message.channel.send("Here : activé");
@@ -78,6 +84,7 @@ export class Command {
         this.message.channel.send("Here : désactivé");
       }
     }
+    */
   }
 
   all() {

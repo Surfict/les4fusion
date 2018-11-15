@@ -1,8 +1,6 @@
 import Discord, { Message, TextChannel } from "discord.js";
-import TelegramBot from "node-telegram-bot-api";
 import config from "./config.json";
-import { configStruct, discordStruct } from "./type.js";
-import moment, { Moment, now } from "moment";
+import { ConfigStruct, DiscordStruct } from "./type.js";
 import { util } from "./util/index.js";
 import { Command } from "./commands/index.js";
 import { EventEmitter } from "events";
@@ -21,13 +19,11 @@ i18next.init({
   }
 });
 
-moment().format();
-
 // TODO Follow message on channel that we are interested by, not all of them
 
 /**************Checks ************************/
-let conf: configStruct = config;
-let err = new EventEmitter();
+const conf: ConfigStruct = config;
+const err = new EventEmitter();
 err.on("error", value => {
   console.error(value);
   process.exit();
@@ -35,7 +31,7 @@ err.on("error", value => {
 
 // Bots initialisation
 // Discord
-let discordBot = new Discord.Client();
+const discordBot = new Discord.Client();
 util.checkDiscordBot(discordBot).catch(e => {
   err.emit("error", e);
 });
@@ -49,11 +45,6 @@ util.isConfigOk(discordBot).catch(e => {
 discordBot.login(config.discordBotToken);
 discordBot.on("error", console.error);
 
-// Var init
-let discords = conf.discords;
-
-
-
 // For every message on the discord
 discordBot.on("message", (message: Message) => {
   //Command to the bot
@@ -61,50 +52,29 @@ discordBot.on("message", (message: Message) => {
     const commandes = new Command(message);
     commandes.sort();
   } else {
+    if (!util.isMessageAlreadyFromTheBot(message.author.id)) {
+      const messageId = message.channel.id;
+      const filesFromMessage = util.imagesToArray(message);
+      console.log(messageId);
 
-    if (util.isInFusion(message))
-    {
-      
-    }
+      if (util.isInFusion(messageId)) {
+        console.log('okinfusion')
+        const fusions = util.fusionsConcernedList(messageId);
+        console.log(fusions)
+        fusions.forEach(fusion => {
+          fusion.channels.forEach(channel => {
+            const channelDiscord = discordBot.channels.get(
+              channel
+            )! as TextChannel;
 
-
-    let discords = conf.discords;
-    let files = util.imagesToArray(message);
-    discords.forEach(element => {
-      if (message.channel.id === element.channelId) {
-        // Is the message coming from the bot ?
-        if (!util.isMessageAlreadyPosted(message.content)) {
-
-          // We are going to sent this message to all the neighbords that have asked for it.
-          discords.forEach(discord => {
-            if (discord.neighboards) {
-              let neighbords = discord.neighboards_name;
-              neighbords.forEach(neihboard => {
-                if (neihboard === element.name) {
-                  const channel = discordBot.channels.get(
-                    discord.channelId
-                  )! as TextChannel;
-                  if (channel !== undefined) {
-                    if (discord.here.everyTime) {
-                      sendHere(discord, message, channel);
-                    }
-                    channel.send(
-                      element.name +
-                        ", " +
-                        message.author.username +
-                        " à " +
-                        moment().format("h:mm") +
-                        " : " +
-                        message.content,
-                      { files: files }
-                    );
-                  }
-                }
+            if (channelDiscord) {
+              channelDiscord.send(util.formatMessage(message, fusion), {
+                files: filesFromMessage
               });
             }
           });
-        }
+        });
       }
-    });
+    }
   }
 });

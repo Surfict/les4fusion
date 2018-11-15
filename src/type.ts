@@ -1,17 +1,19 @@
-export interface discordStruct {
+export interface DiscordStruct {
     discordId: string, channels: string[], name: String
 }
 
-export interface fusionStruct {
+export interface FusionStruct {
     channels: string[]
     name: string,
     forwardingName: boolean,
-    forwardingDate: boolean
+    forwardingDate: boolean,
+    forwardingDiscord: boolean,
+    active: boolean
 }
 
-
-export interface configStruct {
+export interface ConfigStruct {
     discordBotToken: string,
-    discords: discordStruct[],
-    fusions: fusionStruct[],
+    discordBotId: String,
+    discords: DiscordStruct[],
+    fusions: FusionStruct[],
 }

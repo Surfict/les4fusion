@@ -1,15 +1,17 @@
 import config from "./../config.json";
-import { configStruct } from "../type.js";
+import { ConfigStruct, FusionStruct } from "../type.js";
 import { Client, Message } from "discord.js";
 import { uniq } from "lodash";
-
+import moment from "moment";
 export class util {
-  static isMessageAlreadyPosted(message: string): boolean {
-    //By the bot
+  static isMessageAlreadyFromTheBot(idAuthor: string) {
+    console.log(idAuthor);
+    console.log(config.discordBotId);
+    return idAuthor === config.discordBotId;
   }
 
   static imagesToArray(message: Message): string[] {
-    let files: string[] = [];
+    const files: string[] = [];
     if (message.attachments.size > 0) {
       message.attachments.forEach(attach => {
         files.push(attach.url);
@@ -19,8 +21,8 @@ export class util {
   }
 
   static async isConfigOk(discordBot: Client) {
-    const conf: configStruct = config;
-    //Data consistency
+    const conf: ConfigStruct = config;
+    // Data consistency
     const discordsChannels: string[] = [];
     const fusionChannels: string[] = [];
     const discordsIds: string[] = [];
@@ -55,7 +57,7 @@ export class util {
       if (!disc) {
         throw "The discord " +
           discord.discordId +
-          " is not find by the discord bot. Please check your configuration file.";
+          " is not find by the discord bot. Please check your configuration file or check that the bot is on your Discord Server";
       }
     });
     // Are the channels id provided found by the bot ? (is the bot on the Discord server, and is the ID provided good ?)
@@ -78,14 +80,82 @@ export class util {
     }
   }
 
-  // Check if the message come from a channel that want to forward his message
-  static isInFusion(message: Message) {
-    let fusions = config.fusions;
-    //A checker
-    return fusions.every(fusion => fusion.channels.indexOf(message.channel.id) !== -1)
+  // Check if the message come from a channel that want to forward the message
+  static isInFusion(idChannelMessage: string) {
+    let allChannels: string[] = [];
+
+    config.fusions.forEach(fusion => {
+      if (fusion.active) {
+        allChannels = allChannels.concat(fusion.channels);
+      }
+    });
+
+    return allChannels.some(
+      channels => channels.indexOf(idChannelMessage) !== -1
+    );
   }
 
-  //ON veut gérer les multi fusions(une channel dans deux fusion différentes), cette fonciton renvoie un tableau de tableau de channels à qui fw le mssage.
+  // Send an array of the channel we went to forward the message to
 
-  static fusionChannels() {}
+  static fusionsConcernedList(idChannelMessage: string) {
+    const fusions: FusionStruct[] = [];
+
+    config.fusions.forEach(fusion => {
+      if (fusion.active) {
+        if (
+          fusion.channels.some(
+            channel => channel.indexOf(idChannelMessage) !== -1
+          )
+        ) {
+          const channelsToForward: string[] = [];
+          fusion.channels.forEach(channel => {
+            if (channel !== idChannelMessage) {
+              channelsToForward.push(channel);
+            }
+
+            fusions.push({
+              active: true,
+              channels: channelsToForward,
+              name: fusion.name,
+              forwardingDate: fusion.forwardingDate,
+              forwardingName: fusion.forwardingName,
+              forwardingDiscord: fusion.forwardingDiscord
+            });
+          });
+        }
+      }
+    });
+    return fusions;
+  }
+
+  static formatMessage(message: Message, fusion: FusionStruct) {
+    let mess = "";
+
+    if (fusion.forwardingDiscord) {
+      mess = message.guild.name;
+    }
+
+    if (fusion.forwardingName) {
+      if (mess) {
+        mess = mess + ", " + message.author.username;
+      } else {
+        mess = message.author.username;
+      }
+    }
+
+    if (fusion.forwardingDate) {
+      if (mess) {
+        mess = mess + " à " + moment().format("h:mm") + " : ";
+      } else {
+        mess = moment().format("h:mm") + " : ";
+      }
+    } else {
+      if (mess) {
+        mess = mess + " : ";
+      }
+    }
+
+    mess = mess + message.content;
+    return mess;
+  }
 }
