@@ -66,11 +66,20 @@ discordBot.on("message", (message: Message) => {
             )! as TextChannel;
 
             if (channelDiscord) {
-              channelDiscord.send(util.formatMessage(message, fusion), {
-                files: filesFromMessage,
-                embed: new Discord.RichEmbed(message.embeds[0])
-              
+
+              if (message.embeds.length)
+              {
+                channelDiscord.send(util.formatMessage(message, fusion), {
+                  files: filesFromMessage,
+                  embed: new Discord.RichEmbed(message.embeds[0])
+                });
+              }
+              else 
+              {
+                channelDiscord.send(util.formatMessage(message, fusion), {
+                files: filesFromMessage,              
               });
+            }
             }
           });
         });
